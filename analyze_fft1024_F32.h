@@ -209,7 +209,7 @@ public:
 
     virtual void update(void);
 
-private:
+   protected:
     float output[NFFT_D2];
     float sumsq[NFFT_D2];  // Accumulates averages of outputs
     float window[NFFT];

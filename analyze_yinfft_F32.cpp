@@ -52,7 +52,7 @@ void AudioAnalyzeYINFFT_F32::update(void)  {
     for(int i = 1; i < FFT_D2; i++) {
         float sumB = 0;
         for(int k = 0; k < FFT_D2; k++)
-            sumB += XS[k] * cosf(FFT_2PI * k * i / N);
+            sumB += XS[k] * cosf(FFTYIN_2PI * k * i / N);
 
         result[i] = 4.0 / N * sumA - 2.0 / N * sumB;
         sumres = sumres + result[i];

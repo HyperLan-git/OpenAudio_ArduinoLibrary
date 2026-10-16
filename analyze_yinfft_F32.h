@@ -81,7 +81,7 @@ class AudioAnalyzeYINFFT_F32 : public AudioStream_F32
         void useHanningWindow(void) {
             for (int i = 0; i < FFT_SIZE; i++) {
                 // 2*PI/2047 = 0.00306946
-                fftWindow[i] = 0.5*(1.0 - cosf(FFT_2PI*(float)i / (FFT_SIZE-1)));
+                fftWindow[i] = 0.5*(1.0 - cosf(FFTYIN_2PI*(float)i / (FFT_SIZE-1)));
             }
         }
 };

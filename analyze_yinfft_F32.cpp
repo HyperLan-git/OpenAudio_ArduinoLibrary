@@ -20,8 +20,8 @@ void AudioAnalyzeYINFFT_F32::update(void)  {
     block = AudioStream_F32::receiveReadOnly_f32();
     if (!block) return;
 
-    memcpy(fftData, fftData + block->length, FFT_SIZE - block->length);
-    memcpy(fftData + FFT_SIZE - block->length, block->data, FFT_SIZE - block->length);
+    memcpy(fftData, fftData + block->length, (FFT_SIZE - block->length) * sizeof(float));
+    memcpy(fftData + FFT_SIZE - block->length, block->data, (FFT_SIZE - block->length) * sizeof(float));
 
     AudioStream_F32::release(block);
 
@@ -30,7 +30,7 @@ void AudioAnalyzeYINFFT_F32::update(void)  {
 
     current = 0;
     {
-        memcpy(fftIn, fftData, FFT_SIZE);
+        memcpy(fftIn, fftData, FFT_SIZE * sizeof(float));
         apply_window_to_fft_buffer(fftIn, fftWindow);
 
         doFFT();

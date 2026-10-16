@@ -22,14 +22,14 @@ void AudioAnalyzeYINFFT_F32::update(void)  {
     block = AudioStream_F32::receiveReadOnly_f32();
     if (!block) return;
 
-    std::memcpy(fftData, fftData + block->length, FFT_SIZE - block->length);
-    std::memcpy(fftData + FFT_SIZE - block->length, block->data, FFT_SIZE - block->length);
+    memcpy(fftData, fftData + block->length, FFT_SIZE - block->length);
+    memcpy(fftData + FFT_SIZE - block->length, block->data, FFT_SIZE - block->length);
 
     AudioStream_F32::release(block);
 
     // We could return here and update values only on every few blocks
     {
-        std::memcpy(fftIn, fftData, FFT_SIZE);
+        memcpy(fftIn, fftData, FFT_SIZE);
         apply_window_to_fft_buffer(fftIn, fftWindow);
 
         doFFT();

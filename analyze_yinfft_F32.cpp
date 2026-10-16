@@ -16,8 +16,6 @@ static void apply_window_to_fft_buffer(void *buffer, const void *window) {
 
 void AudioAnalyzeYINFFT_F32::update(void)  {
     audio_block_f32_t *block;
-    float outDC = 0.0f;
-    float magsq = 0.0f;
 
     block = AudioStream_F32::receiveReadOnly_f32();
     if (!block) return;
@@ -28,6 +26,9 @@ void AudioAnalyzeYINFFT_F32::update(void)  {
     AudioStream_F32::release(block);
 
     // We could return here and update values only on every few blocks
+    if(blocksToSkip > ++current) return;
+
+    current = 0;
     {
         memcpy(fftIn, fftData, FFT_SIZE);
         apply_window_to_fft_buffer(fftIn, fftWindow);

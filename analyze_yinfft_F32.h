@@ -34,8 +34,8 @@
 
 constexpr int FFT_SIZE = 2048, FFT_D2 = FFT_SIZE/2;
 
-constexpr float FFT_PI = 3.14159265359f;
-constexpr float FFT_2PI = 6.28318530718f;
+constexpr float FFTYIN_PI = 3.14159265359f;
+constexpr float FFTYIN_2PI = 6.28318530718f;
 
 class AudioAnalyzeYINFFT_F32 : public AudioStream_F32
 {
@@ -51,16 +51,17 @@ class AudioAnalyzeYINFFT_F32 : public AudioStream_F32
 
         virtual void update(void);
 
-        float getProbability() {
+        float getProbability() const {
             return p;
         }
 
-        float getFrequency() {
+        float getFrequency() const {
             return freq;
         }
 
         
     private:
+        int blocksToSkip = 2, current = 0;
         float sampleRate = AUDIO_SAMPLE_RATE;
 
         arm_cfft_instance_f32 Sfft;

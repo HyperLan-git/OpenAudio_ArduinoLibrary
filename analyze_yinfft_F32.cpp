@@ -22,14 +22,14 @@ void AudioAnalyzeYINFFT_F32::update(void)  {
     block = AudioStream_F32::receiveReadOnly_f32();
     if (!block) return;
 
-    std::memcopy(fftData, fftData + block->length, FFT_SIZE - block->length);
-    std::memcopy(fftData + FFT_SIZE - block->length, block->data, FFT_SIZE - block->length);
+    std::memcpy(fftData, fftData + block->length, FFT_SIZE - block->length);
+    std::memcpy(fftData + FFT_SIZE - block->length, block->data, FFT_SIZE - block->length);
 
     AudioStream_F32::release(block);
 
     // We could return here and update values only on every few blocks
     {
-        std::memcopy(fftIn, fftData, FFT_SIZE);
+        std::memcpy(fftIn, fftData, FFT_SIZE);
         apply_window_to_fft_buffer(fftIn, fftWindow);
 
         doFFT();
@@ -49,7 +49,7 @@ void AudioAnalyzeYINFFT_F32::update(void)  {
     float min = 1;
     int minI = 0;
     for(int i = 1; i < FFT_D2; i++) {
-        float sumB = 0
+        float sumB = 0;
         for(int k = 0; k < FFT_D2; k++)
             sumB += XS[k] * cosf(FFT_2PI * k * i / N);
 

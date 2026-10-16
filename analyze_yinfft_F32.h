@@ -40,7 +40,7 @@ constexpr float FFT_2PI = 6.28318530718f;
 class AudioAnalyzeYINFFT_F32 : public AudioStream_F32
 {
     public:
-        AudioAnalyzeYINFFT_F32() {
+        AudioAnalyzeYINFFT_F32() : AudioStream_F32(1, inputQueueArray_f32) {
             result[0] = 1;
             useHanningWindow();
             Sfft = arm_cfft_sR_f32_len2048;
@@ -62,6 +62,9 @@ class AudioAnalyzeYINFFT_F32 : public AudioStream_F32
         
     private:
         float sampleRate = AUDIO_SAMPLE_RATE;
+
+        arm_cfft_instance_f32 Sfft;
+        audio_block_f32_t *inputQueueArray_f32[1];
 
         float fftData[FFT_SIZE];
         float fftIn[FFT_SIZE];

@@ -26,7 +26,7 @@ class ResynthYIN_F32 : public AudioStream_F32 {
   private:
     virtual void update();
 
-    double phase = 0;
+    float32_t phase = 0;
 
     float32_t freq = 0;
 

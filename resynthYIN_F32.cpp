@@ -56,14 +56,11 @@ f32 measurePitch(f32 *data, int samples, float sr, float threshold) {
 
 }
 
-int num = 0;
-int idx = 0;
-
-const float log440 = std::log2(440.0f);
+const float log440 = log2f(440.0f);
 
 float freqToMidi(float freq)
 {
-    return 69.0f + 12.0f * (std::log2(freq) - log440);
+    return 69.0f + 12.0f * (log2f(freq) - log440);
 }
 
 // x = 69 + 12 * log2(y / 440)
@@ -72,8 +69,12 @@ float freqToMidi(float freq)
 
 float midiToFreq(int midi)
 {
-    return std::pow(2, (midi-69) / 12.f) * 440;
+    return exp2f((midi-69) / 12.f) * 440;
 }
+
+f32 oldrms = 0;
+
+int num = 0;
 
 void ResynthYIN_F32::update() {
 	audio_block_f32_t *block = AudioStream_F32::receiveReadOnly_f32();
@@ -89,7 +90,7 @@ void ResynthYIN_F32::update() {
     bool compute = (++num %= 3) == 0;
     if(compute) {
         float f = measurePitch(buffer, BUFFER_SIZE, sr, 0.3);
-        if(f != -1) freq = midiToFreq((int)freqToMidi(f));
+        if(f != -1) freq = midiToFreq(roundf(freqToMidi(f)));
     }
     //++idx;
     //freq = block->data[0];
@@ -97,7 +98,7 @@ void ResynthYIN_F32::update() {
     f32 rms = 0;
     arm_dot_prod_f32(block->data, block->data, samples, &rms);
     //rms = sqrtf(rms / samples);
-    rms = rms / samples;
+    rms /= samples;
 
 	release(block);
     
@@ -106,14 +107,17 @@ void ResynthYIN_F32::update() {
         return;
     }
 
-    const double dphase = (freq) / sr;
+    const float dphase = (freq) / sr;
+    const float damp = (rms - oldrms) / samples;
     for (int i = 0; i < samples; i++) {
-        out_block->data[i] = wavetable[(int)(phase * (WAVETABLE_SIZE - 1))];
-        out_block->data[i] *= rms;
+        out_block->data[i] = wavetable[(int)roundf(phase * (WAVETABLE_SIZE - 1))];
+        out_block->data[i] *= oldrms + i * damp;
 
         phase += dphase;
         if (phase >= 1.0) phase -= 1.0f;
     }
+
+    oldrms = rms;
     
 	transmit(out_block);
 	release(out_block);

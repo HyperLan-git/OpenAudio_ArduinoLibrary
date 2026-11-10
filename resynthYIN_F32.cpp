@@ -99,6 +99,7 @@ void ResynthYIN_F32::update() {
     arm_dot_prod_f32(block->data, block->data, samples, &rms);
     //rms = sqrtf(rms / samples);
     rms /= samples;
+    if(rms < 0.001) rms = 0;
 
 	release(block);
     
@@ -110,7 +111,11 @@ void ResynthYIN_F32::update() {
     const float dphase = (freq) / sr;
     const float damp = (rms - oldrms) / samples;
     for (int i = 0; i < samples; i++) {
-        out_block->data[i] = wavetable[(int)roundf(phase * (WAVETABLE_SIZE - 1))];
+        float idx = phase * (WAVETABLE_SIZE - 1);
+        float nextSample = (int)(idx+1) < samples ? wavetable[(int)(idx+1)] : wavetable[0];
+        float sample = wavetable[(int)(idx)];
+        float prog = idx - floorf(idx);
+        out_block->data[i] = sample * (1-prog) + nextSample * prog;
         out_block->data[i] *= oldrms + i * damp;
 
         phase += dphase;
